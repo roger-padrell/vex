@@ -1,7 +1,8 @@
 type 
     Repo* = object
         name*: string
-        owner*: string # User ID
+        ownerID*: string # User ID
+        owner*: string
         version*: string
         hosted*: bool = false
         origin*: string = ""
