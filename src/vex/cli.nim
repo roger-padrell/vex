@@ -348,3 +348,5 @@ proc setSuppressMessages*(val: bool) =
 
 proc promptYesNo*(msg: string): bool = 
   return promptList(dontForcePrompt,msg,["Yes","No"]) == "Yes"
+
+proc getpass*(prompt: cstring) : cstring {.header: "<unistd.h>", importc: "getpass".}
