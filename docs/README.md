@@ -7,6 +7,9 @@ Created under the [MIT license](license.txt)
 ## API Documentation
 Check [api.md](api.md)
 
+## VexHost
+The hosting software for a vex origin, check [vexhost.md](vexhost.md)
+
 ## Atributions
 - Using `nim` and `nimble`
 - Using the following nim packages: `argon2, libsha, termstyle, jsony, curly, nimAES` (The omitted packages, vexbox, are made by myself are have the only purpose to use in this project).
