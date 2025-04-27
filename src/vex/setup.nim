@@ -57,18 +57,18 @@ proc setup*(): bool =
 
     displayInfo "Proceeding to store data..."
     let hashedPasswd = hashPassword(username, password)
-    let storedId = generateID(username, password)[0..idLen-1]
-    let data = username&"\n"&storedId&"\n"&hashedPasswd;
+    let id = generateID(username, password)[0..idLen-1]
+    let data = username&"\n"&id&"\n"&hosturl&"\n"&hashedPasswd;
     writeFile(getAppDir()&"/config", data)
     displaySuccess "Setup completed"
     return true;
 
-proc getStoredData*(): StoredData = 
+proc getStoredData*(): LocalData = 
     let filePath = getAppDir()&"/config";
     if not fileExists(filePath):
-        return StoredData(id: "404")
+        quit("Config not found, run `vex setup`")
     let dt = readFile(filePath).split("\n");
-    let res = StoredData(username: dt[0], id: dt[1], hashedPassword: dt[2])
+    let res = LocalData(username: dt[0], id: dt[1], hoster: dt[2], hashedPassword: dt[3])
     return res;
 
 if isMainModule:

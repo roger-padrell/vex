@@ -1,14 +1,9 @@
-import os, types, termstyle, cli, tables, jsony, toml_serialization
+import os, types, cli, jsony, toml_serialization, setup, aes, curly
 
-var origins = initTable[string,string]()
-origins["other"] = ""
+let curl = newCurly()
 
 proc init*(path: string) = 
-    var defaultID = ""
-    if not fileExists(getAppDir()&"user.id"):
-        displayWarning "Default user not found. Configure it with `vex login`"
-    else:
-        defaultID = readFile(getAppDir()&"user.id");
+    let usrData = getStoredData()
 
     # Checks at directory
     if dirExists(path):
@@ -26,18 +21,8 @@ proc init*(path: string) =
     # Start prompts
     display "Starting creation of repo at: ", path
     let name = promptCustom("Repo name", path.splitPath()[1])
-    let owner = promptCustom("Owner ID", defaultID)
-    let version = "0.0.0"
-    let hosted = promptYesNo("Are you going to host it?")
-    var origin = ""
-    if hosted:
-        origin = promptList(dontForcePrompt, "Where are you going to host it?", ["other"])
-        if origin == "other":
-            origin = promptCustom("URL","")
-        else:
-            origin = origins[origin]
 
-    var res: Repo = Repo(name: name, owner: owner, version: version, hosted: hosted, origin: origin)
+    var res: Repo = Repo(name: name, ownerID: usrData.id, origin: usrData.hoster, owner: usrData.username)
     echo "  ", $(res.toJson())
 
     let correct = promptYesNo("Is this correct?")
@@ -47,7 +32,16 @@ proc init*(path: string) =
 
     # Generate the .vex.toml file
     let tomlString = Toml.encode(res)
-    writeFile(path&".vex.toml", tomlString)
+    writeFile(path&"/.vex.toml", tomlString)
 
     # Publish to origin if exists
-    # ... to implement
+    # Create Auth
+    let a: Auth = Auth(username: usrData.username, passwordHash: usrData.hashedPassword)
+    let url = usrData.hoster&"/new/"&usrData.username&"/"&name;
+    let reqObj: RepoRequest = RepoRequest(auth: a, repo: res);
+    let body = ($(reqObj.toJson())).encryptData(usrData.id)
+    let request = curl.post(url, emptyHttpHeaders(), body)
+    if request.body == "200":
+        displaySuccess "Repo created at hoster '"&usrData.hoster&"'"
+    else:
+        displayError request.body

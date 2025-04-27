@@ -1,1 +1,6 @@
 src/vex.out
+nimble.develop
+nimble.paths
+nimble.lock
+*.out
+config.nims
