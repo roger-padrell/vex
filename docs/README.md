@@ -2,7 +2,10 @@
 Vex is an alternative version control software, developed in [nim](https://nim-lang.org).
 
 ## License
-Created under the [MIT license](license.txt).
+Created under the [MIT license](license.txt)
+
+## API Documentation
+Check [api.md](api.md)
 
 ## Atributions
 - Using `nim` and `nimble`
